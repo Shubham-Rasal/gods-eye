@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Recorder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .button-container {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        #startBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #stopBtn {
+            background-color: #f44336;
+            color: white;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .video-container {
+            margin: 20px auto;
+            width: 640px;
+            height: 480px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #videoFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Recorder</h1>
+    <div class="button-container">
+        <button id="startBtn" onclick="startRecording()">Start Recording</button>
+        <button id="stopBtn" onclick="stopRecording()">Stop Recording</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div class="video-container">
+        <img id="videoFeed" src="/video_feed" alt="Video Preview">
+    </div>
+
+    <script>
+        // Release camera when leaving the page
+        window.addEventListener('beforeunload', function() {
+            fetch('/release_camera');
+        });
+
+        function startRecording() {
+            fetch('/start_recording')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').textContent = data.message;
+                    document.getElementById('status').style.backgroundColor = 
+                        data.status === 'success' ? '#e8f5e9' : '#ffebee';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('status').textContent = 'Error starting recording';
+                    document.getElementById('status').style.backgroundColor = '#ffebee';
+                });
+        }
+
+        function stopRecording() {
+            fetch('/stop_recording')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').textContent = data.message;
+                    document.getElementById('status').style.backgroundColor = 
+                        data.status === 'success' ? '#e8f5e9' : '#ffebee';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('status').textContent = 'Error stopping recording';
+                    document.getElementById('status').style.backgroundColor = '#ffebee';
+                });
+        }
+    </script>
+</body>
+</html>
